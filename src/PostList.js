@@ -2,25 +2,44 @@ import React from 'react';
 import UserInfo from './UserInfo';
 import UserPost from './UserPost';
 import Filtering from './Filtering';
+import { getPosts, getUsers, getComments } from './getData';
 
 class PostList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       listOfPosts: [],
-      visibleList: [],
-      buttonDisabled: false,
+      visiblePosts: [],
       isLoaded: false,
-      text: 'LOAD',
+      isLoading: false,
       showComments: [],
     };
-
-    this.handleClick = this.handleClick.bind(this);
-    this.filterBy = this.filterBy.bind(this);
-    this.showCommentClick = this.showCommentClick.bind(this);
   }
 
-  showCommentClick(index) {
+  loadData = () => {
+    this.setState({ isLoading: true });
+
+    Promise.all([getPosts(), getUsers(), getComments()])
+      .then(([posts, users, comments]) => {
+        const preparedPosts = posts.map(post => (
+          {
+            ...post,
+            user: users.find(user => user.id === post.userId),
+            comments: comments.filter(comment => post.id === comment.postId),
+          }
+        ));
+
+        this.setState({
+          listOfPosts: preparedPosts,
+          isLoaded: true,
+          isLoading: false,
+          visiblePosts: preparedPosts,
+          showComments: Array(preparedPosts.length).fill(false),
+        });
+      });
+  }
+
+  showCommentClick = (index) => {
     this.setState((prevState) => {
       const newIndexes = [...prevState.showComments];
       newIndexes[index] = !newIndexes[index];
@@ -28,7 +47,7 @@ class PostList extends React.Component {
     });
   }
 
-  filterBy(event) {
+  filterBy = (event) => {
     let updatedList = this.state.listOfPosts;
     updatedList = updatedList.filter((item) => {
       const postData = item.title + item.body;
@@ -36,40 +55,7 @@ class PostList extends React.Component {
         event.target.value.toLowerCase()
       ) !== -1;
     });
-    this.setState({ visibleList: updatedList });
-  }
-
-  handleClick() {
-    this.setState({ buttonDisabled: true, text: 'Loading...' });
-    const postsApi = fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(response => response.json());
-    const usersApi = fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json());
-    const commentsApi = fetch('https://jsonplaceholder.typicode.com/comments')
-      .then(response => response.json());
-
-    Promise.all([postsApi, usersApi, commentsApi])
-      .then((finalVals) => {
-        const posts = finalVals[0];
-        const users = finalVals[1];
-        const comments = finalVals[2];
-        this.setState({
-          listOfPosts: posts.map(post => (
-            {
-              ...post,
-              user: users.find(user => user.id === post.userId),
-              comments: comments.filter(comment => post.id === comment.postId),
-            }
-          )),
-          isLoaded: true,
-        });
-      })
-      .then(() => {
-        this.setState({
-          visibleList: [...this.state.listOfPosts],
-          showComments: Array(this.state.listOfPosts.length).fill(false),
-        });
-      });
+    this.setState({ visiblePosts: updatedList });
   }
 
   render() {
@@ -77,22 +63,26 @@ class PostList extends React.Component {
       <div className="container">
         { !this.state.isLoaded && (
           <button
-            onClick={this.handleClick}
+            onClick={this.loadData}
             type="button"
-            disabled={this.state.buttonDisabled}
+            disabled={this.state.isLoading}
             className="load-button"
           >
-            {this.state.text}
+            {this.state.isLoading ? 'Loading...' : 'LOAD'}
           </button>
         )}
+        { this.state.isLoaded && (
+          <Filtering
+            isLoaded={this.state.isLoaded}
+            filterBy={this.filterBy}
+          />
+        )}
 
-        <Filtering
-          isLoaded={this.state.isLoaded}
-          filterBy={this.filterBy}
-        />
-
-        {this.state.visibleList.map((post, i) => (
-          <div className="post-item">
+        {this.state.visiblePosts.map((post, i) => (
+          <div
+            className="post-item"
+            key={post.id}
+          >
             <UserInfo
               key={post.user.id}
               user={post.user}
