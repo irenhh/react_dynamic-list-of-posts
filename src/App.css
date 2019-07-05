@@ -1,3 +1,117 @@
+* {
+  margin: 0;
+}
+
+body {
+  margin: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  background: #11293a;
+}
+
 .App {
+  display: grid;
+  grid-template-columns: 800px;
+  justify-content: center;
+  gap: 10px;
+}
+
+.app-title {
   text-align: center;
+  color: #D2F5FF;
+}
+
+.load-button {
+  display: block;
+  margin: 20px auto;
+  width: 30vw;
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+  font-weight: bold;
+  border: 0;
+  color: #D2F5FF;
+  background: #E69C24;
+  box-shadow: 10px 10px 49px 0px rgba(64,86,105,0.82);
+  cursor: pointer;
+}
+
+.load-button:hover {
+  background: #e28610;
+}
+
+.filter-input {
+  width: 100%;
+  height: 30px;
+  font-size: 14px;
+  border: 0;
+  border-bottom: 1px solid #BAD8D2;
+  background: transparent;
+  color: #D2F5FF;
+  outline: none;
+}
+
+.filter-input::placeholder {
+  color: #bdbdb4;
+}
+
+.user-info__name {
+  font-size: 22px;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  color: #D2F5FF;
+}
+
+.user-info__contact-info {
+  font-size: 12px;
+  margin-bottom: 10px;
+  color: #D2F5FF;
+}
+
+.user-post {
+  text-align: left;
+  background: #E69C24;
+  color: #405669;
+  padding: 10px;
+}
+
+.user-post__body-title {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.user-post__body-text {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.user-post__line-break {
+  border: 1px solid #405669;
+}
+
+.user-post__body-comment-label {
+  font-size: 12px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  outline: none;
+  color: #405669;
+}
+
+.user-post__comment {
+  font-size: 12px;
+  margin-bottom: 7px;
+  border: 1px dotted;
+  padding: 5px;
+}
+
+.comment-name {
+  font-weight: 500;
+}
+
+.comment-email {
+  font-style: italic;
 }
